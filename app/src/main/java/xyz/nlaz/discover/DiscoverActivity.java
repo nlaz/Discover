@@ -1,7 +1,10 @@
 package xyz.nlaz.discover;
 
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -23,6 +26,7 @@ public class DiscoverActivity extends AppCompatActivity
     private GridView gridView;
     private GridViewAdapter gridAdapter;
     private ArrayList<Bitmap> imageList;
+    private Cursor cursor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,12 +35,18 @@ public class DiscoverActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        gridView = (GridView) findViewById(R.id.gridView);
         imageList = new ArrayList<>();
         fetchImages();
 
-        gridView = (GridView) findViewById(R.id.gridView);
-        gridAdapter = new GridViewAdapter(this, R.layout.photo_item, imageList);
-        gridView.setAdapter(gridAdapter);
+        Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        cursor = getContentResolver().query(uri, null, null, null, null);
+
+        if (cursor != null) {
+            cursor.moveToFirst();
+            gridAdapter = new GridViewAdapter(this, cursor);
+            gridView.setAdapter(gridAdapter);
+        }
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
