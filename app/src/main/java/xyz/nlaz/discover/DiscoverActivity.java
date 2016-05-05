@@ -1,5 +1,6 @@
 package xyz.nlaz.discover;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -12,9 +13,16 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.GridView;
+
+import java.util.ArrayList;
 
 public class DiscoverActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private GridView gridView;
+    private GridViewAdapter gridAdapter;
+    private ArrayList<Bitmap> imageList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,7 +31,12 @@ public class DiscoverActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        imageList = new ArrayList<>();
+        fetchImages();
 
+        gridView = (GridView) findViewById(R.id.gridView);
+        gridAdapter = new GridViewAdapter(this, R.layout.photo_item, imageList);
+        gridView.setAdapter(gridAdapter);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -99,5 +112,9 @@ public class DiscoverActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void fetchImages() {
+
     }
 }

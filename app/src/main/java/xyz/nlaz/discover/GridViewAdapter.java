@@ -2,6 +2,7 @@ package xyz.nlaz.discover;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,9 +17,9 @@ import java.util.ArrayList;
 public class GridViewAdapter  extends ArrayAdapter {
     private Context context;
     private int layoutResourceId;
-    private ArrayList data = new ArrayList();
+    private ArrayList<Bitmap> data = new ArrayList<>();
 
-    public GridViewAdapter(Context context, int resource, ArrayList data) {
+    public GridViewAdapter(Context context, int resource, ArrayList<Bitmap> data) {
         super(context, resource, data);
         this.layoutResourceId = resource;
         this.context = context;
@@ -40,8 +41,8 @@ public class GridViewAdapter  extends ArrayAdapter {
             holder = (ViewHolder) view.getTag();
         }
 
-        ImageItem item = data.get(position);
-        holder.imageView.setImageBitmap(item.getImage());
+        Bitmap image = data.get(position);
+        holder.imageView.setImageBitmap(image);
         return view;
     }
 
