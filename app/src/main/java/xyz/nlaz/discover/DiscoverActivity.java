@@ -1,13 +1,15 @@
 package xyz.nlaz.discover;
 
+import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -18,15 +20,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.GridView;
 
-import java.util.ArrayList;
-
 public class DiscoverActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private GridView gridView;
     private GridViewAdapter gridAdapter;
-    private ArrayList<Bitmap> imageList;
     private Cursor cursor;
+    public static final int MY_READ_PERMISSION = 1234;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,18 +35,9 @@ public class DiscoverActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        checkPermissions();
+
         gridView = (GridView) findViewById(R.id.gridView);
-        imageList = new ArrayList<>();
-        fetchImages();
-
-        Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-        cursor = getContentResolver().query(uri, null, null, null, null);
-
-        if (cursor != null) {
-            cursor.moveToFirst();
-            gridAdapter = new GridViewAdapter(this, cursor);
-            gridView.setAdapter(gridAdapter);
-        }
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -65,6 +56,36 @@ public class DiscoverActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    private void checkPermissions() {
+        int permisssionResult = ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE);
+        if (permisssionResult != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE},
+                    MY_READ_PERMISSION);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+
+        if (requestCode == MY_READ_PERMISSION) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                cursor = getContentResolver().query(uri, null, null, null, null);
+
+                if (cursor != null) {
+                    cursor.moveToFirst();
+                    gridAdapter = new GridViewAdapter(this, cursor);
+                    gridView.setAdapter(gridAdapter);
+                }
+
+            }
+        }
     }
 
     @Override
@@ -122,9 +143,5 @@ public class DiscoverActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    private void fetchImages() {
-
     }
 }
