@@ -71,10 +71,11 @@ public class DiscoverActivity extends AppCompatActivity
     }
 
     private void fetchImages() {
-        Uri uri = MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI;
-        String[] proj = { MediaStore.Images.Thumbnails.DATA, MediaStore.Images.Thumbnails._ID };
+        Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        String[] proj = { MediaStore.Images.Media.DATA, MediaStore.Images.Media._ID };
+        String orderBy = MediaStore.Images.Media.DATE_TAKEN + " DESC";
         Log.d(TAG, "fetchImages: before query");
-        cursor = getContentResolver().query(uri, proj, null, null, null);
+        cursor = getContentResolver().query(uri, proj, null, null, orderBy);
         Log.d(TAG, "fetchImages: after query");
         if (cursor != null) {
             Log.d(TAG, "fetchImages: cursor not null");

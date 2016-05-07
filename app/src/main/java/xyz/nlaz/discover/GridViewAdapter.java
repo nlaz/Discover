@@ -4,10 +4,8 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.media.ThumbnailUtils;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -41,58 +39,19 @@ public class GridViewAdapter  extends CursorAdapter{
     public void bindView(View view, Context context, Cursor cursor) {
         ImageView imageView = (ImageView) view.findViewById(R.id.image);
 
-        String photoFilePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Thumbnails.DATA));
-        Log.d(TAG, "bindView: " + photoFilePath);
+        int image_id = cursor.getInt(cursor.getColumnIndex(MediaStore.Images.Media._ID));
+        Log.d(TAG, "bindView: " + image_id);
 
-        loadBitmap(photoFilePath, imageView);
+        loadBitmap(image_id, imageView);
     }
 
-    public static Bitmap decodeSampledBitmapFromResource(String filePath, int reqWidth, int reqHeight) {
-
-        // First decode with inJustDecodeBounds=true to check dimensions
-        final BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(filePath, options);
-
-        // Calculate inSampleSize
-        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
-
-        // Decode bitmap with inSampleSize set
-        options.inJustDecodeBounds = false;
-        Bitmap bitmap = BitmapFactory.decodeFile(filePath, options);
-
-        return ThumbnailUtils.extractThumbnail(bitmap, reqWidth, reqHeight);
-    }
-
-    public static int calculateInSampleSize(
-            BitmapFactory.Options options, int reqWidth, int reqHeight) {
-        // Raw height and width of image
-        final int height = options.outHeight;
-        final int width = options.outWidth;
-        int inSampleSize = 1;
-
-        if (height > reqHeight || width > reqWidth) {
-
-            final int halfHeight = height / 2;
-            final int halfWidth = width / 2;
-
-            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
-            // height and width larger than the requested height and width.
-            while ((halfHeight / inSampleSize) > reqHeight
-                    && (halfWidth / inSampleSize) > reqWidth) {
-                inSampleSize *= 2;
-            }
-        }
-        return inSampleSize;
-    }
-
-    public void loadBitmap(String filePath, ImageView imageView) {
-        if (cancelPotentialWork(filePath, imageView)) {
+    public void loadBitmap(int image_id, ImageView imageView) {
+        if (cancelPotentialWork(image_id, imageView)) {
             final BitmapWorkerTask task = new BitmapWorkerTask(imageView);
             final AsyncDrawable asyncDrawable =
                     new AsyncDrawable(context.getResources(), null, task);
             imageView.setImageDrawable(asyncDrawable);
-            task.execute(filePath);
+            task.execute(image_id);
         }
     }
 
@@ -111,13 +70,13 @@ public class GridViewAdapter  extends CursorAdapter{
         }
     }
 
-    public static boolean cancelPotentialWork(String data, ImageView imageView) {
+    public static boolean cancelPotentialWork(int data, ImageView imageView) {
         final BitmapWorkerTask bitmapWorkerTask = getBitmapWorkerTask(imageView);
 
         if (bitmapWorkerTask != null) {
-            final String bitmapData = bitmapWorkerTask.data;
+            final int bitmapData = bitmapWorkerTask.data;
             // If bitmapData is not yet set or it differs from the new data
-            if (bitmapData == "" || bitmapData != data) {
+            if (bitmapData == 0 || bitmapData != data) {
                 // Cancel previous task
                 bitmapWorkerTask.cancel(true);
             } else {
@@ -140,9 +99,9 @@ public class GridViewAdapter  extends CursorAdapter{
         return null;
     }
 
-    class BitmapWorkerTask extends AsyncTask<String, Void, Bitmap> {
+    class BitmapWorkerTask extends AsyncTask<Integer, Void, Bitmap> {
         private final WeakReference<ImageView> imageViewReference;
-        private String data = "";
+        private int data = 0;
 
         public BitmapWorkerTask(ImageView imageView) {
             // Use a WeakReference to ensure the ImageView can be garbage collected
@@ -151,9 +110,11 @@ public class GridViewAdapter  extends CursorAdapter{
 
         // Decode image in background.
         @Override
-        protected Bitmap doInBackground(String... params) {
+        protected Bitmap doInBackground(Integer... params) {
             data = params[0];
-            return decodeSampledBitmapFromResource(data, 100, 100);
+            int kind = MediaStore.Images.Thumbnails.MICRO_KIND;
+            Bitmap bitmap = MediaStore.Images.Thumbnails.getThumbnail(context.getContentResolver(), data, kind, null);
+            return bitmap;
         }
 
         @Override
