@@ -6,15 +6,15 @@
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="xyz.nlaz.discover.DiscoverActivity"
-    tools:showIn="@layout/app_bar_discover"
-    android:background="#353535">
+    tools:showIn="@layout/app_bar_discover">
 
     <GridView
         android:id="@+id/gridView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:numColumns="3"
+        android:numColumns="4"
+        android:horizontalSpacing="5dp"
         android:stretchMode="columnWidth"
         android:verticalSpacing="5dp"/>
 
