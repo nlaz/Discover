@@ -71,11 +71,15 @@ public class DiscoverActivity extends AppCompatActivity
     }
 
     private void fetchImages() {
-        Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-        cursor = getContentResolver().query(uri, null, null, null, null);
-
+        Uri uri = MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI;
+        String[] proj = { MediaStore.Images.Thumbnails.DATA, MediaStore.Images.Thumbnails._ID };
+        Log.d(TAG, "fetchImages: before query");
+        cursor = getContentResolver().query(uri, proj, null, null, null);
+        Log.d(TAG, "fetchImages: after query");
         if (cursor != null) {
+            Log.d(TAG, "fetchImages: cursor not null");
             cursor.moveToFirst();
+            Log.d(TAG, "fetchImages: cursor.moved to first");
             gridAdapter = new GridViewAdapter(this, cursor);
             Log.d(TAG, "onRequestPermissionsResult: Cursor Adapter Created");
             gridView.setAdapter(gridAdapter);

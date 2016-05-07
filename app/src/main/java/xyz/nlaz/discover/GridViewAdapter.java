@@ -41,7 +41,7 @@ public class GridViewAdapter  extends CursorAdapter{
     public void bindView(View view, Context context, Cursor cursor) {
         ImageView imageView = (ImageView) view.findViewById(R.id.image);
 
-        String photoFilePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+        String photoFilePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Thumbnails.DATA));
         Log.d(TAG, "bindView: " + photoFilePath);
 
         loadBitmap(photoFilePath, imageView);
