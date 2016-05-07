@@ -15,6 +15,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,6 +28,7 @@ public class DiscoverActivity extends AppCompatActivity
     private GridViewAdapter gridAdapter;
     private Cursor cursor;
     public static final int MY_READ_PERMISSION = 1234;
+    private String TAG = "DiscoverActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,9 +37,8 @@ public class DiscoverActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        checkPermissions();
-
         gridView = (GridView) findViewById(R.id.gridView);
+        checkPermissions();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -64,6 +65,22 @@ public class DiscoverActivity extends AppCompatActivity
             ActivityCompat.requestPermissions(this,
                     new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE},
                     MY_READ_PERMISSION);
+        } else {
+            fetchImages();
+        }
+    }
+
+    private void fetchImages() {
+        Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        cursor = getContentResolver().query(uri, null, null, null, null);
+
+        if (cursor != null) {
+            cursor.moveToFirst();
+            gridAdapter = new GridViewAdapter(this, cursor);
+            Log.d(TAG, "onRequestPermissionsResult: Cursor Adapter Created");
+            gridView.setAdapter(gridAdapter);
+        } else {
+            Log.d(TAG, "System media store is empty");
         }
     }
 
@@ -74,16 +91,7 @@ public class DiscoverActivity extends AppCompatActivity
         if (requestCode == MY_READ_PERMISSION) {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-                cursor = getContentResolver().query(uri, null, null, null, null);
-
-                if (cursor != null) {
-                    cursor.moveToFirst();
-                    gridAdapter = new GridViewAdapter(this, cursor);
-                    gridView.setAdapter(gridAdapter);
-                }
-
+                fetchImages();
             }
         }
     }
