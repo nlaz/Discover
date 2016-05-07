@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.ThumbnailUtils;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -58,7 +59,9 @@ public class GridViewAdapter  extends CursorAdapter{
 
         // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;
-        return BitmapFactory.decodeFile(filePath, options);
+        Bitmap bitmap = BitmapFactory.decodeFile(filePath, options);
+
+        return ThumbnailUtils.extractThumbnail(bitmap, reqWidth, reqHeight);
     }
 
     public static int calculateInSampleSize(
