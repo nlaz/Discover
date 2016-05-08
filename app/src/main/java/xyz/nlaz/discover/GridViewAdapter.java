@@ -23,11 +23,22 @@ import java.lang.ref.WeakReference;
 public class GridViewAdapter  extends CursorAdapter{
 
     private Context context;
+    private Cursor cursor;
     private String TAG = "GridViewAdapter";
 
     public GridViewAdapter(Context context, Cursor c) {
         super(context, c, 0);
         this.context = context;
+        this.cursor = c;
+    }
+
+    @Override
+    public Object getItem(int position) {
+        int id = 0;
+        if (cursor.moveToPosition(position)) {
+            id = cursor.getInt(cursor.getColumnIndex(MediaStore.Images.Media._ID));
+        }
+        return id;
     }
 
     @Override
@@ -40,7 +51,6 @@ public class GridViewAdapter  extends CursorAdapter{
         ImageView imageView = (ImageView) view.findViewById(R.id.image);
 
         int image_id = cursor.getInt(cursor.getColumnIndex(MediaStore.Images.Media._ID));
-        Log.d(TAG, "bindView: " + image_id);
 
         loadBitmap(image_id, imageView);
     }
@@ -112,8 +122,12 @@ public class GridViewAdapter  extends CursorAdapter{
         @Override
         protected Bitmap doInBackground(Integer... params) {
             data = params[0];
-            int kind = MediaStore.Images.Thumbnails.MICRO_KIND;
-            Bitmap bitmap = MediaStore.Images.Thumbnails.getThumbnail(context.getContentResolver(), data, kind, null);
+            Log.d(TAG, "doInBackground: ID: " + data);
+            Bitmap bitmap = null;
+            if ( !isCancelled()) {
+                int kind = MediaStore.Images.Thumbnails.MICRO_KIND;
+                bitmap = MediaStore.Images.Thumbnails.getThumbnail(context.getContentResolver(), data, kind, null);
+            }
             return bitmap;
         }
 

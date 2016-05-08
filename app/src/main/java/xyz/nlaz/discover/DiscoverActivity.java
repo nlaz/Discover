@@ -1,5 +1,6 @@
 package xyz.nlaz.discover;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -19,6 +20,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.GridView;
 
 public class DiscoverActivity extends AppCompatActivity
@@ -38,6 +40,7 @@ public class DiscoverActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         gridView = (GridView) findViewById(R.id.gridView);
+        gridView.setOnItemClickListener(getOnItemClickListener());
         checkPermissions();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -57,6 +60,19 @@ public class DiscoverActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    private AdapterView.OnItemClickListener getOnItemClickListener() {
+        return new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                int image_id = (Integer) parent.getItemAtPosition(position);
+                Intent intent = new Intent(DiscoverActivity.this, DetailsActivity.class);
+                intent.putExtra("image_id", image_id);
+
+                startActivity(intent);
+            }
+        };
     }
 
     private void checkPermissions() {
