@@ -19,6 +19,9 @@ public class DetailsActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        if (getSupportActionBar() != null)
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         int image_id = getIntent().getIntExtra("image_id", 0);
         ImageView imageView = (ImageView) findViewById(R.id.imageView);
         Bitmap image = null;
