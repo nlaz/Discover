@@ -5,14 +5,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    android:background="@android:color/black"
     tools:context="xyz.nlaz.discover.DetailsActivity"
     tools:showIn="@layout/activity_details">
 
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
         android:layout_gravity="center"
-        android:scaleType="fitCenter"/>
+        android:scaleType="centerCrop"/>
 
 </FrameLayout>
