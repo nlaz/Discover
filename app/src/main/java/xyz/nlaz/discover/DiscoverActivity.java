@@ -23,6 +23,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public class DiscoverActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -31,6 +34,7 @@ public class DiscoverActivity extends AppCompatActivity
     private Cursor cursor;
     public static final int MY_READ_PERMISSION = 1234;
     private String TAG = "DiscoverActivity";
+    private HashMap<String, ArrayList<MediaItem>> datesMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +43,7 @@ public class DiscoverActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        datesMap = new HashMap<>();
         gridView = (GridView) findViewById(R.id.gridView);
         gridView.setOnItemClickListener(getOnItemClickListener());
         checkPermissions();
@@ -95,15 +100,30 @@ public class DiscoverActivity extends AppCompatActivity
 
     private void fetchImages() {
         Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-        String[] proj = { MediaStore.Images.Media.DATA, MediaStore.Images.Media._ID };
+//        String[] proj = { MediaStore.Images.Media.DATA, MediaStore.Images.Media._ID, MediaStore.Images.Media.BUCKET_DISPLAY_NAME };
+        String[] proj = null;
         String orderBy = MediaStore.Images.Media.DATE_TAKEN + " DESC";
         Log.d(TAG, "fetchImages: before query");
         cursor = getContentResolver().query(uri, proj, null, null, orderBy);
         Log.d(TAG, "fetchImages: after query");
         if (cursor != null) {
-            Log.d(TAG, "fetchImages: cursor not null");
             cursor.moveToFirst();
-            Log.d(TAG, "fetchImages: cursor.moved to first");
+            while(!cursor.isAfterLast()) {
+                int image_id = cursor.getInt(cursor.getColumnIndex(MediaStore.Images.Media._ID));
+                String bucket = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME));
+                String filePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+                String date_taken = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATE_TAKEN));
+                MediaItem item = new MediaItem(image_id, bucket, filePath, date_taken);
+                ArrayList<MediaItem> list;
+                if (datesMap.containsKey(date_taken)) {
+                    list = datesMap.get(date_taken);
+                } else {
+                    list = new ArrayList<>();
+                }
+                list.add(item);
+                datesMap.put(date_taken, list);
+                cursor.moveToNext();
+            }
             gridAdapter = new GridViewAdapter(this, cursor);
             Log.d(TAG, "onRequestPermissionsResult: Cursor Adapter Created");
             gridView.setAdapter(gridAdapter);

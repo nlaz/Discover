@@ -51,6 +51,11 @@ public class GridViewAdapter  extends CursorAdapter{
         ImageView imageView = (ImageView) view.findViewById(R.id.image);
 
         int image_id = cursor.getInt(cursor.getColumnIndex(MediaStore.Images.Media._ID));
+        String bucket = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME));
+        String display_name = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME));
+        String title = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.TITLE));
+        String data = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+        Log.d(TAG, "bindView: IMAGE ID: " + image_id + ", BUCKET ID: " + bucket + ", DISPLAY_NAME: " + display_name +  ", DATA: " + data + ", TITLE: " + title );
 
         loadBitmap(image_id, imageView);
     }
@@ -58,8 +63,7 @@ public class GridViewAdapter  extends CursorAdapter{
     public void loadBitmap(int image_id, ImageView imageView) {
         if (cancelPotentialWork(image_id, imageView)) {
             final BitmapWorkerTask task = new BitmapWorkerTask(imageView);
-            final AsyncDrawable asyncDrawable =
-                    new AsyncDrawable(context.getResources(), null, task);
+            final AsyncDrawable asyncDrawable = new AsyncDrawable(context.getResources(), null, task);
             imageView.setImageDrawable(asyncDrawable);
             task.execute(image_id);
         }
