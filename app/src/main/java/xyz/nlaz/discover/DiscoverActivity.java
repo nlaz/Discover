@@ -124,9 +124,9 @@ public class DiscoverActivity extends AppCompatActivity
                 datesMap.put(date_taken, list);
                 cursor.moveToNext();
             }
-            gridAdapter = new GridViewAdapter(this, cursor);
-            Log.d(TAG, "onRequestPermissionsResult: Cursor Adapter Created");
-            gridView.setAdapter(gridAdapter);
+//////            gridAdapter = new GridViewAdapter(this, cursor);
+////            Log.d(TAG, "onRequestPermissionsResult: Cursor Adapter Created");
+//            gridView.setAdapter(gridAdapter);
         } else {
             Log.d(TAG, "System media store is empty");
         }
