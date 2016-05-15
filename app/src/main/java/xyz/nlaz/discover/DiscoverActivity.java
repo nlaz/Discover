@@ -124,6 +124,7 @@ public class DiscoverActivity extends AppCompatActivity
                 datesMap.put(date_taken, list);
                 cursor.moveToNext();
             }
+            PhotoViewAdapter photoAdapter = new PhotoViewAdapter(this,dates,map,);
 //////            gridAdapter = new GridViewAdapter(this, cursor);
 ////            Log.d(TAG, "onRequestPermissionsResult: Cursor Adapter Created");
 //            gridView.setAdapter(gridAdapter);
